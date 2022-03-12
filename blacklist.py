@@ -58,17 +58,20 @@ class block():
             'phone_number': self.phone_number_entry.get(),
         }
 
+        if '' in list(guest_data.values()):
+            self.emptyMssg()
+            return
         if self.confirmationMssg():
             with open(blacklist, 'r') as csvfile:
                 reader = csv.reader(csvfile)
                 for line in reader:
                     if line == list(guest_data.values()):
                         self.duplicateMssg()
-                    with open(blacklist, 'w') as csvfilewrite:
-                        wrtiter = csv.DictWriter(csvfilewrite, fieldnames=guest_data.keys())
-                        wrtiter.writeheader()
-                        wrtiter.writerows([guest_data])
-                        print("data written")
+                        return
+            with open(blacklist, 'a') as csvfile:
+                wrtiter = csv.DictWriter(csvfile, fieldnames=guest_data.keys())
+                wrtiter.writerows([guest_data])
+                print("data written")
         self.blacklist_window.destroy()
         self.blacklist_window.update()
 
@@ -79,4 +82,8 @@ class block():
     def duplicateMssg(self):
         tk.messagebox.showinfo( "الإسم موجود بالفعل",
                                 "The name \"{0}\" is already in the blacklist?".format(self.name_entry.get()),
+                                parent=self.blacklist_window)
+    def emptyMssg(self):
+        tk.messagebox.showinfo( "أكمل البيانات",
+                                "Please fill in the all the fields.",
                                 parent=self.blacklist_window)

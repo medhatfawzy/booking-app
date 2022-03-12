@@ -9,6 +9,7 @@ from awesometkinter.bidirender import add_bidi_support
 import csv
 
 reservation_file = "data/reservations.csv"
+blacklist = "data/blacklist.csv"
 
 class add():
     def __init__(self, root):
@@ -71,29 +72,46 @@ class add():
         self.btn_save.place(relx=0.5, rely=0.9, anchor= CENTER)
 
     def saveGuest(self):
-        guest_data = {
+        reservation_data = {
             'name': self.name_entry.get(),
             'phone_number': self.phone_number_entry.get(),
             'arrival_date': self.arrival_date_entry.get(),
             'departure_date': self.departure_date_entry.get()
         }
+        if '' in list(reservation_data.values()):
+            self.emptyMssg()
+            return
 
+        with open(blacklist, 'r') as blacklistfile:
+            blacklist_reader = csv.reader(blacklistfile)
+            guest_data = list(reservation_data.values())[0:2]
+            for line in blacklist_reader:
+                if line == guest_data:
+                    self.nameBlacklistMssg()
+                    return
         with open(reservation_file, 'r') as csvfile:
             csv_reader = csv.reader(csvfile)
             for line in csv_reader:
-                if line == list(guest_data.values()):
-                    self.showWarning()
+                if line == list(reservation_data.values()):
+                    self.duplicateMssg()
                     return
-            with open(reservation_file, 'a') as wtitefile:
-                csv_writer = csv.DictWriter(wtitefile, fieldnames=guest_data.keys())
-                csv_writer.writerows([guest_data])
+        with open(reservation_file, 'a') as csvfile:
+            csv_writer = csv.DictWriter(csvfile, fieldnames=reservation_data.keys())
+            csv_writer.writerows([reservation_data])
+            print("reservation added")
 
         self.add_window.destroy()
         self.add_window.update()
 
-    def showWarning(self):
-        tk.messagebox.showwarning(  "الحجز موجود بالفعل",
+    def duplicateMssg(self):
+        tk.messagebox.showinfo(  "الحجز موجود بالفعل",
                                     "Reservation already exists!",
                                     parent=self.add_window)
-
-
+    def emptyMssg(self):
+        tk.messagebox.showinfo( "أكمل البيانات",
+                                "Please fill in the all the fields.",
+                                parent=self.add_window)
+    def nameBlacklistMssg(self):
+        tk.messagebox.showwarning("الإسم محظور",
+                                    "The name you are trying to add is blacklisted!",
+                                    parent=self.add_window)
