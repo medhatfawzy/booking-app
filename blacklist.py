@@ -6,6 +6,9 @@ except:
     import Tkinter as tk
     from Tkinter import *
 from awesometkinter.bidirender import add_bidi_support
+import csv
+
+blacklist = "data/blacklist.csv"
 
 class block():
     def __init__(self, root):
@@ -54,13 +57,26 @@ class block():
             'name': self.name_entry.get(),
             'phone_number': self.phone_number_entry.get(),
         }
-        print(guest_data)
-        self.confirmation()
+
+        if self.confirmationMssg():
+            with open(blacklist, 'r') as csvfile:
+                reader = csv.reader(csvfile)
+                for line in reader:
+                    if line == list(guest_data.values()):
+                        self.duplicateMssg()
+                    with open(blacklist, 'w') as csvfilewrite:
+                        wrtiter = csv.DictWriter(csvfilewrite, fieldnames=guest_data.keys())
+                        wrtiter.writeheader()
+                        wrtiter.writerows([guest_data])
+                        print("data written")
         self.blacklist_window.destroy()
         self.blacklist_window.update()
 
-    def confirmation(self):
-        tk.messagebox.askyesno( "هل تريد إضافة الإسم فعلاً",
+    def confirmationMssg(self):
+        return tk.messagebox.askyesno( "هل تريد إضافة الإسم فعلاً",
                                 "Are you sure about adding \"{0}\" to the blacklist?".format(self.name_entry.get()),
-                                parent=self.blacklist_window
-        )
+                                parent=self.blacklist_window)
+    def duplicateMssg(self):
+        tk.messagebox.showinfo( "الإسم موجود بالفعل",
+                                "The name \"{0}\" is already in the blacklist?".format(self.name_entry.get()),
+                                parent=self.blacklist_window)
