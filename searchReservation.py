@@ -6,53 +6,54 @@ except:
     from Tkinter import *
 from awesometkinter.bidirender import add_bidi_support
 
-def search():
-    search_window = Toplevel()
-    search_window.title("البحث عن نزيل")
+class search():
+    def __init__(self):
+        self.search_window = Toplevel()
+        self.search_window.title("البحث عن نزيل")
 
-    width = int(search_window.winfo_screenwidth() /3)
-    height = int(search_window.winfo_screenheight() /3)
-    x_left = int(search_window.winfo_screenwidth()/2 - width / 2)
-    y_top = int(search_window.winfo_screenheight()/2 - height / 2)
+        width = int(self.search_window.winfo_screenwidth() / 3)
+        height = int(self.search_window.winfo_screenheight() / 3)
+        x_left = int(self.search_window.winfo_screenwidth() / 2 - width / 2)
+        y_top = int(self.search_window.winfo_screenheight() / 2 - height / 2)
 
-    try:
-        search_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
-    except:
-        search_window.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
+        try:
+            self.search_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
+        except:
+            self.search_window.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
 
-    name_entry = Entry(search_window)
-    name_label = Label(search_window)
-    add_bidi_support(name_entry)
-    add_bidi_support(name_label)
-    name_label.set(":الإسم")
+        entry_width = 40
 
-    phone_number_entry = Entry(search_window)
-    phone_number_label = Label(search_window)
-    add_bidi_support(phone_number_entry)
-    add_bidi_support(phone_number_label)
-    phone_number_label.set(":الرقم")
+        self.name_entry = Entry(self.search_window, width=entry_width)
+        self.name_label = Label(self.search_window)
+        add_bidi_support(self.name_entry)
+        add_bidi_support(self.name_label)
+        self.name_label.set(":الإسم")
 
-    arrival_date_entry = Entry(search_window)
-    arrival_date_label = Label(search_window)
-    add_bidi_support(arrival_date_entry)
-    add_bidi_support(arrival_date_label)
-    arrival_date_label.set(":معاد الوصول")
+        self.phone_number_entry = Entry(self.search_window, width=entry_width)
+        self.phone_number_label = Label(self.search_window)
+        add_bidi_support(self.phone_number_entry)
+        add_bidi_support(self.phone_number_label)
+        self.phone_number_label.set(":الرقم")
 
-    btn_search = Button(search_window, text="search", command=searchGuest)
 
-    rely_label = 0.4
-    rely_entry = 0.5
+        self.btn_search = Button(self.search_window, text="search", command=self.searchGuest)
 
-    name_label.place(relx=.8, rely=rely_label, anchor= CENTER)
-    name_entry.place(relx=.8, rely=rely_entry, anchor= CENTER)
+        relx_label = 0.8
+        relx_entry = 0.4
 
-    phone_number_label.place(relx=.5, rely=rely_label, anchor= CENTER)
-    phone_number_entry.place(relx=.5, rely=rely_entry, anchor= CENTER)
+        self.name_label.place(relx=relx_label, rely=0.2, anchor= CENTER)
+        self.name_entry.place(relx=relx_entry, rely=0.2, anchor= CENTER)
 
-    arrival_date_label.place(relx=.2, rely=rely_label, anchor= CENTER)
-    arrival_date_entry.place(relx=.2, rely=rely_entry, anchor= CENTER)
+        self.phone_number_label.place(relx=relx_label, rely=0.4, anchor= CENTER)
+        self.phone_number_entry.place(relx=relx_entry, rely=0.4, anchor= CENTER)
 
-    btn_search.place(relx=.5, rely=.8, anchor= CENTER)
+        self.btn_search.place(relx=0.5, rely=0.8, anchor= CENTER)
 
-def searchGuest():
-    pass
+    def searchGuest(self):
+        guest_data = {
+            'name': self.name_entry.get(),
+            'phone_number': self.phone_number_entry.get(),
+        }
+        print(guest_data)
+        self.search_window.destroy()
+        self.search_window.update()

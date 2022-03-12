@@ -6,45 +6,53 @@ except:
     from Tkinter import *
 from awesometkinter.bidirender import add_bidi_support
 
-def block():
-    blacklist_window = Toplevel()
-    blacklist_window.title("الممنوعين من الدخول")
+class block():
+    def __init__(self):
+        self.blacklist_window = Toplevel()
+        self.blacklist_window.title("الممنوعين من الدخول")
 
-    width = int(blacklist_window.winfo_screenwidth() /3)
-    height = int(blacklist_window.winfo_screenheight() /3)
-    x_left = int(blacklist_window.winfo_screenwidth()/2 - width / 2)
-    y_top = int(blacklist_window.winfo_screenheight()/2 - height / 2)
+        width = int(self.blacklist_window.winfo_screenwidth() / 3)
+        height = int(self.blacklist_window.winfo_screenheight() / 3)
+        x_left = int(self.blacklist_window.winfo_screenwidth() / 2 - width / 2)
+        y_top = int(self.blacklist_window.winfo_screenheight() / 2 - height / 2)
 
-    try:
-        blacklist_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
-    except:
-        blacklist_window.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
+        try:
+            self.blacklist_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
+        except:
+            self.blacklist_window.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
 
+        entry_width = 40
 
-    name_entry = Entry(blacklist_window)
-    name_label = Label(blacklist_window)
-    add_bidi_support(name_entry)
-    add_bidi_support(name_label)
-    name_label.set(":الإسم")
+        self.name_entry = Entry(self.blacklist_window, width=entry_width)
+        self.name_label = Label(self.blacklist_window)
+        add_bidi_support(self.name_entry)
+        add_bidi_support(self.name_label)
+        self.name_label.set(":الإسم")
 
-    phone_number_entry = Entry(blacklist_window)
-    phone_number_label = Label(blacklist_window)
-    add_bidi_support(phone_number_entry)
-    add_bidi_support(phone_number_label)
-    phone_number_label.set(":الرقم")
+        self.phone_number_entry = Entry(self.blacklist_window, width=entry_width)
+        self.phone_number_label = Label(self.blacklist_window)
+        add_bidi_support(self.phone_number_entry)
+        add_bidi_support(self.phone_number_label)
+        self.phone_number_label.set(":الرقم")
 
-    btn_save = Button(blacklist_window, text="save", command=blockGuest)
+        self.btn_save = Button(self.blacklist_window, text="save", command=self.blockGuest)
 
-    rely_label = 0.4
-    rely_entry = 0.5
+        relx_label = 0.8
+        relx_entry = 0.4
 
-    name_label.place(relx=.7, rely=rely_label, anchor= CENTER)
-    name_entry.place(relx=.7, rely=rely_entry, anchor= CENTER)
+        self.name_label.place(relx=relx_label, rely=0.2, anchor= CENTER)
+        self.name_entry.place(relx=relx_entry, rely=0.2, anchor= CENTER)
 
-    phone_number_label.place(relx=.3, rely=rely_label, anchor= CENTER)
-    phone_number_entry.place(relx=.3, rely=rely_entry, anchor= CENTER)
+        self.phone_number_label.place(relx=relx_label, rely=0.4, anchor= CENTER)
+        self.phone_number_entry.place(relx=relx_entry, rely=0.4, anchor= CENTER)
 
-    btn_save.place(relx=.5, rely=.8, anchor= CENTER)
+        self.btn_save.place(relx=0.5, rely=0.8, anchor= CENTER)
 
-def blockGuest():
-    pass
+    def blockGuest(self):
+        guest_data = {
+            'name': self.name_entry.get(),
+            'phone_number': self.phone_number_entry.get(),
+        }
+        print(guest_data)
+        self.blacklist_window.destroy()
+        self.blacklist_window.update()
