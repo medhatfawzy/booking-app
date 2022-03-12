@@ -38,11 +38,11 @@ def block():
     rely_label = 0.4
     rely_entry = 0.5
 
-    name_label.place(relx=.3, rely=rely_label, anchor= CENTER)
-    name_entry.place(relx=.3, rely=rely_entry, anchor= CENTER)
+    name_label.place(relx=.7, rely=rely_label, anchor= CENTER)
+    name_entry.place(relx=.7, rely=rely_entry, anchor= CENTER)
 
-    phone_number_label.place(relx=.7, rely=rely_label, anchor= CENTER)
-    phone_number_entry.place(relx=.7, rely=rely_entry, anchor= CENTER)
+    phone_number_label.place(relx=.3, rely=rely_label, anchor= CENTER)
+    phone_number_entry.place(relx=.3, rely=rely_entry, anchor= CENTER)
 
     btn_save.place(relx=.5, rely=.8, anchor= CENTER)
 
