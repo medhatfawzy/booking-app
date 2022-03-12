@@ -1,14 +1,15 @@
 #!/usr/bin/python
-
 try:
+    import tkinter as tk
     from tkinter import *
 except:
+    import Tkinter as tk
     from Tkinter import *
 from awesometkinter.bidirender import add_bidi_support
 
 class block():
-    def __init__(self):
-        self.blacklist_window = Toplevel()
+    def __init__(self, root):
+        self.blacklist_window = Toplevel(root)
         self.blacklist_window.title("الممنوعين من الدخول")
 
         width = int(self.blacklist_window.winfo_screenwidth() / 3)
@@ -54,5 +55,12 @@ class block():
             'phone_number': self.phone_number_entry.get(),
         }
         print(guest_data)
+        self.confirmation()
         self.blacklist_window.destroy()
         self.blacklist_window.update()
+
+    def confirmation(self):
+        tk.messagebox.askyesno( "هل تريد إضافة الإسم فعلاً",
+                                "Are you sure about adding \"{0}\" to the blacklist?".format(self.name_entry.get()),
+                                parent=self.blacklist_window
+        )

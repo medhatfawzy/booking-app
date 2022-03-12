@@ -1,14 +1,15 @@
 #!/usr/bin/python
-
 try:
+    import tkinter as tk
     from tkinter import *
 except:
+    import Tkinter as tk
     from Tkinter import *
 from awesometkinter.bidirender import add_bidi_support
 
 class search():
-    def __init__(self):
-        self.search_window = Toplevel()
+    def __init__(self, root):
+        self.search_window = Toplevel(root)
         self.search_window.title("البحث عن نزيل")
 
         width = int(self.search_window.winfo_screenwidth() / 3)

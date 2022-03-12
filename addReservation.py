@@ -1,17 +1,19 @@
 #!/usr/bin/python
 try:
+    import tkinter as tk
     from tkinter import *
 except:
+    import Tkinter as tk
     from Tkinter import *
-# import awesometkinter as atk
 from awesometkinter.bidirender import add_bidi_support
 import csv
 
 reservation_file = "data/reservations.csv"
 
 class add():
-    def __init__(self):
-        self.add_window = Toplevel()
+    def __init__(self, root):
+        self.root = root
+        self.add_window = Toplevel(self.root)
         self.add_window.title("إضافة نزيل")
 
         width = int(self.add_window.winfo_screenwidth() / 2.5)
@@ -41,13 +43,13 @@ class add():
         self.arrival_date_label = Label(self.add_window)
         add_bidi_support(self.arrival_date_entry)
         add_bidi_support(self.arrival_date_label)
-        self.arrival_date_label.set(":معاد الوصول")
+        self.arrival_date_label.set(":تاريخ الوصول")
 
-        self.period_entry = Entry(self.add_window, width=entry_width)
-        self.period_label = Label(self.add_window)
-        add_bidi_support(self.period_entry)
-        add_bidi_support(self.period_label)
-        self.period_label.set(":مدة الإقامة")
+        self.departure_date_entry = Entry(self.add_window,width=entry_width)
+        self.departure_date_label = Label(self.add_window)
+        add_bidi_support(self.departure_date_entry)
+        add_bidi_support(self.departure_date_label)
+        self.departure_date_label.set(":تاريخ المغادرة")
 
         self.btn_save = Button(self.add_window, text="save", command=self.saveGuest)
 
@@ -63,8 +65,8 @@ class add():
         self.arrival_date_label.place(relx=relx_label, rely=0.5, anchor= CENTER)
         self.arrival_date_entry.place(relx=relx_entry, rely=0.5, anchor= CENTER)
 
-        self.period_label.place(relx=relx_label, rely=0.7, anchor= CENTER)
-        self.period_entry.place(relx=relx_entry, rely=0.7, anchor= CENTER)
+        self.departure_date_label.place(relx=relx_label, rely=0.7, anchor= CENTER)
+        self.departure_date_entry.place(relx=relx_entry, rely=0.7, anchor= CENTER)
 
         self.btn_save.place(relx=0.5, rely=0.9, anchor= CENTER)
 
@@ -73,19 +75,25 @@ class add():
             'name': self.name_entry.get(),
             'phone_number': self.phone_number_entry.get(),
             'arrival_date': self.arrival_date_entry.get(),
-            'period': self.period_entry.get()
+            'departure_date': self.departure_date_entry.get()
         }
-        print(guest_data)
-        with open(reservation_file, "w") as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow([
-                guest_data['name'],
-                guest_data['phone_number'],
-                guest_data['arrival_date'],
-                guest_data['period']
-            ])
+
+        with open(reservation_file, 'r') as csvfile:
+            csv_reader = csv.reader(csvfile)
+            for line in csv_reader:
+                if line == list(guest_data.values()):
+                    self.showWarning()
+                    return
+            with open(reservation_file, 'a') as wtitefile:
+                csv_writer = csv.DictWriter(wtitefile, fieldnames=guest_data.keys())
+                csv_writer.writerows([guest_data])
+
         self.add_window.destroy()
         self.add_window.update()
 
+    def showWarning(self):
+        tk.messagebox.showwarning(  "الحجز موجود بالفعل",
+                                    "Reservation already exists!",
+                                    parent=self.add_window)
 
 
