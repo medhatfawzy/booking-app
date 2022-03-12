@@ -1,9 +1,14 @@
 #!/usr/bin/python
+
 try:
     from tkinter import *
 except:
     from Tkinter import *
-from functions import *
+
+from addReservation import *
+from blacklist import *
+from searchReservation import *
+
 from PIL import Image, ImageTk
 from awesometkinter.bidirender import add_bidi_support, render_text
 
@@ -15,12 +20,12 @@ root.title("الحجوزات")
 padx = 50
 pady = 10
 
-btn_add = Button(root, text="Add Guest", command=add, padx=padx, pady=pady)
-btn_check = Button(root, text="Check Guest", command=check, padx=padx, pady=pady)
-btn_blacklist = Button(root, text="Blacklist", command=blacklist, padx=padx, pady=pady)
+btn_add         = Button(root, text="Add Guest", command=add, padx=padx, pady=pady)
+btn_check       = Button(root, text="Check Guest", command=search, padx=padx, pady=pady)
+btn_blacklist   = Button(root, text="Blacklist", command=block, padx=padx, pady=pady)
 
-logo_img = ImageTk.PhotoImage(Image.open("alfayrouz.png"))
-logo_label = Label(image=logo_img)
+logo_img    = ImageTk.PhotoImage(Image.open("alfayrouz.png"))
+logo_label  = Label(image=logo_img)
 
 # Putting things on screen
 btn_add.grid(row=1, column=0)
