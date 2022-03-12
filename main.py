@@ -12,7 +12,9 @@ from PIL import Image, ImageTk
 from awesometkinter.bidirender import add_bidi_support, render_text
 
 root = Tk()
-root.title("الحجوزات")
+root.title("حجوزات")
+
+root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='alfayrouz.png'))
 
 width = int(root.winfo_screenwidth() / 2)
 height = int(root.winfo_screenheight() / 2)
