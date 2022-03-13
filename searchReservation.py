@@ -1,13 +1,11 @@
 #!/usr/bin/python
 import tkinter as tk
-from tkinter import *
+from tkinter import Toplevel, Entry, Label, Button, CENTER
 from awesometkinter.bidirender import add_bidi_support
 import csv
 
-
-blacklist_file = "data/blacklist.csv"
 reservation_file = "data/reservations.csv"
-
+blacklist_file = "data/blacklist.csv"
 
 class search():
     def __init__(self, root):

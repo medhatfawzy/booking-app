@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import tkinter as tk
-from tkinter import *
+from tkinter import Toplevel, Entry, Label, Button, CENTER
 from awesometkinter.bidirender import add_bidi_support
 import csv
 
