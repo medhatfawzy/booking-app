@@ -1,8 +1,5 @@
 #!/usr/bin/python
-try:
-    from tkinter import *
-except:
-    from Tkinter import *
+from tkinter import *
 
 from addReservation import *
 from searchReservation import *
@@ -12,7 +9,7 @@ from PIL import Image, ImageTk
 from awesometkinter.bidirender import add_bidi_support, render_text
 
 root = Tk()
-root.title("حجوزات")
+root.title("الحجوزات")
 
 root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='alfayrouz.png'))
 
@@ -20,11 +17,7 @@ width = int(root.winfo_screenwidth() / 2)
 height = int(root.winfo_screenheight() / 2)
 x_left = int(root.winfo_screenwidth() / 2 - width / 2)
 y_top = int(root.winfo_screenheight() / 2 - height / 2)
-
-try:
-    root.geometry(f"{width}x{height}+{x_left}+{y_top}")
-except:
-    root.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
+root.geometry(f"{width}x{height}+{x_left}+{y_top}")
 
 def add_local():
     add(root)

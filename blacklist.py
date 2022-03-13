@@ -1,29 +1,22 @@
 #!/usr/bin/python
-try:
-    import tkinter as tk
-    from tkinter import *
-except:
-    import Tkinter as tk
-    from Tkinter import *
+import tkinter as tk
+from tkinter import *
 from awesometkinter.bidirender import add_bidi_support
 import csv
 
-blacklist = "data/blacklist.csv"
+blacklist_file = "data/blacklist.csv"
 
 class block():
     def __init__(self, root):
         self.blacklist_window = Toplevel(root)
-        self.blacklist_window.title("الممنوعين من الدخول")
+        self.blacklist_window.title("إضافة إسم لقائمة الممنوعين من الدخول")
 
         width = int(self.blacklist_window.winfo_screenwidth() / 3)
         height = int(self.blacklist_window.winfo_screenheight() / 3)
         x_left = int(self.blacklist_window.winfo_screenwidth() / 2 - width / 2)
         y_top = int(self.blacklist_window.winfo_screenheight() / 2 - height / 2)
 
-        try:
-            self.blacklist_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
-        except:
-            self.blacklist_window.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
+        self.blacklist_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
 
         entry_width = 40
 
@@ -58,32 +51,37 @@ class block():
             'phone_number': self.phone_number_entry.get(),
         }
 
-        if '' in list(guest_data.values()):
-            self.emptyMssg()
-            return
+        if self.emptyFields(guest_data): return
+
         if self.confirmationMssg():
-            with open(blacklist, 'r') as csvfile:
-                reader = csv.reader(csvfile)
-                for line in reader:
-                    if line == list(guest_data.values()):
-                        self.duplicateMssg()
-                        return
-            with open(blacklist, 'a') as csvfile:
-                wrtiter = csv.DictWriter(csvfile, fieldnames=guest_data.keys())
+            if self.duplicateName(guest_data): return
+
+            with open(blacklist_file, 'a') as blacklist:
+                wrtiter = csv.DictWriter(blacklist, fieldnames=guest_data.keys())
                 wrtiter.writerows([guest_data])
                 print("data written")
+
         self.blacklist_window.destroy()
         self.blacklist_window.update()
 
     def confirmationMssg(self):
         return tk.messagebox.askyesno( "هل تريد إضافة الإسم فعلاً",
-                                "Are you sure about adding \"{0}\" to the blacklist?".format(self.name_entry.get()),
+                                f"Are you sure about adding \"{self.name_entry.get()}\" to the blacklist?",
                                 parent=self.blacklist_window)
-    def duplicateMssg(self):
-        tk.messagebox.showinfo( "الإسم موجود بالفعل",
-                                "The name \"{0}\" is already in the blacklist?".format(self.name_entry.get()),
+
+    def duplicateName(self, guest_data):
+            with open(blacklist_file, 'r') as blacklist:
+                reader = csv.reader(blacklist)
+                for line in reader:
+                    if line == list(guest_data.values()):
+                        tk.messagebox.showinfo( "الإسم موجود بالفعل",
+                                f"The name \"{self.name_entry.get()}\" is already in the blacklist?",
                                 parent=self.blacklist_window)
-    def emptyMssg(self):
-        tk.messagebox.showinfo( "أكمل البيانات",
+                        return True
+
+    def emptyFields(self, guest_data):
+        if '' in list(guest_data.values()):
+            tk.messagebox.showinfo( "أكمل البيانات",
                                 "Please fill in the all the fields.",
                                 parent=self.blacklist_window)
+            return True

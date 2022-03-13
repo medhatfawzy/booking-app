@@ -1,15 +1,11 @@
 #!/usr/bin/python
-try:
-    import tkinter as tk
-    from tkinter import *
-except:
-    import Tkinter as tk
-    from Tkinter import *
+import tkinter as tk
+from tkinter import *
 from awesometkinter.bidirender import add_bidi_support
 import csv
 
 reservation_file = "data/reservations.csv"
-blacklist = "data/blacklist.csv"
+blacklist_file = "data/blacklist.csv"
 
 class add():
     def __init__(self, root):
@@ -22,11 +18,7 @@ class add():
         x_left = int(self.add_window.winfo_screenwidth() / 2 - width / 2)
         y_top = int(self.add_window.winfo_screenheight() / 2 - height / 2)
 
-        try:
-            self.add_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
-        except:
-            self.add_window.geometry("{0}x{1}+{2}+{3}".format(width, height, x_left, y_top))
-
+        self.add_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
         entry_width = 40
         self.name_entry = Entry(self.add_window, width=entry_width)
         self.name_label = Label(self.add_window)
@@ -78,23 +70,10 @@ class add():
             'arrival_date': self.arrival_date_entry.get(),
             'departure_date': self.departure_date_entry.get()
         }
-        if '' in list(reservation_data.values()):
-            self.emptyMssg()
-            return
+        if self.emptyFields(reservation_data): return
+        if self.nameBlacklisted(reservation_data): return
+        if self.duplicateReservation(reservation_data): return
 
-        with open(blacklist, 'r') as blacklistfile:
-            blacklist_reader = csv.reader(blacklistfile)
-            guest_data = list(reservation_data.values())[0:2]
-            for line in blacklist_reader:
-                if line == guest_data:
-                    self.nameBlacklistMssg()
-                    return
-        with open(reservation_file, 'r') as csvfile:
-            csv_reader = csv.reader(csvfile)
-            for line in csv_reader:
-                if line == list(reservation_data.values()):
-                    self.duplicateMssg()
-                    return
         with open(reservation_file, 'a') as csvfile:
             csv_writer = csv.DictWriter(csvfile, fieldnames=reservation_data.keys())
             csv_writer.writerows([reservation_data])
@@ -103,15 +82,30 @@ class add():
         self.add_window.destroy()
         self.add_window.update()
 
-    def duplicateMssg(self):
-        tk.messagebox.showinfo(  "الحجز موجود بالفعل",
-                                    "Reservation already exists!",
-                                    parent=self.add_window)
-    def emptyMssg(self):
-        tk.messagebox.showinfo( "أكمل البيانات",
+    def emptyFields(self, reservation_data):
+        if '' in list(reservation_data.values()):
+            tk.messagebox.showinfo( "أكمل البيانات",
                                 "Please fill in the all the fields.",
                                 parent=self.add_window)
-    def nameBlacklistMssg(self):
-        tk.messagebox.showwarning("الإسم محظور",
+            return True
+
+    def nameBlacklisted(self, reservation_data):
+        with open(blacklist_file, 'r') as blacklist:
+            blacklist_reader = csv.reader(blacklist)
+            guest_data = list(reservation_data.values())[0:2]
+            for line in blacklist_reader:
+                if line == guest_data:
+                    tk.messagebox.showwarning("الإسم محظور",
                                     "The name you are trying to add is blacklisted!",
                                     parent=self.add_window)
+                    return True
+
+    def duplicateReservation(self, reservation_data):
+        with open(reservation_file, 'r') as csvfile:
+            csv_reader = csv.reader(csvfile)
+            for line in csv_reader:
+                if line == list(reservation_data.values()):
+                    tk.messagebox.showinfo(  "الحجز موجود بالفعل",
+                                    "Reservation already exists!",
+                                    parent=self.add_window)
+                    return True
