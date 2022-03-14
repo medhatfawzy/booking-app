@@ -1,6 +1,6 @@
 #!/usr/bin/python
-import tkinter as tk
-from tkinter import Toplevel, Entry, Label, Button, CENTER
+# Minimum python version required is 3.6
+from tkinter import Toplevel, Entry, Label, Button, CENTER, messagebox
 from awesometkinter.bidirender import add_bidi_support
 import csv
 
@@ -49,7 +49,7 @@ class add():
         # creating the save button
         self.btn_save = Button(self.add_window, text="Save", command=self.saveGuest)
 
-        # creating the distance from the left for the label and the entry
+        # the distance from the left for the label and the entry
         relx_label = 0.7
         relx_entry = 0.4
 
@@ -70,7 +70,7 @@ class add():
 
     def saveGuest(self):
         '''
-        This is the function that is activated when when click the save button
+        This is the function that is activated when the user click the save button
         '''
         reservation_data = {
             'name': self.name_entry.get(),
@@ -86,30 +86,31 @@ class add():
             csv_writer = csv.DictWriter(csvfile, fieldnames=reservation_data.keys())
             csv_writer.writerows([reservation_data])
             print("reservation added")
-
+        # These two line are used to close the Toplevel()
         self.add_window.destroy()
         self.add_window.update()
 
     def emptyFields(self, reservation_data):
         '''
-        This is a helper function to check if the input fields are empty or not
+        This is a helper function to check if there is an empty input field
         '''
         if '' in list(reservation_data.values()):
-            tk.messagebox.showinfo( "أكمل البيانات",
-                                "Please fill in the all the fields.",
+            messagebox.showinfo( "أكمل البيانات",
+                                "Please fill in all the fields.",
                                 parent=self.add_window)
             return True
 
     def nameBlacklisted(self, reservation_data):
         '''
-        This helper function checks if the name we are trying to create a reservation for exists in the blacklist or not.
+        This helper function checks if the name we are trying to create a reservation for
+        exists in the blacklist or not.
         '''
         with open(blacklist_file, 'r') as blacklist:
             blacklist_reader = csv.reader(blacklist)
             guest_data = list(reservation_data.values())[0:2]
             for line in blacklist_reader:
                 if line == guest_data:
-                    tk.messagebox.showwarning("الإسم محظور",
+                    messagebox.showwarning("الإسم محظور",
                                     "The name you are trying to add is blacklisted!",
                                     parent=self.add_window)
                     return True
@@ -122,7 +123,7 @@ class add():
             csv_reader = csv.reader(csvfile)
             for line in csv_reader:
                 if line == list(reservation_data.values()):
-                    tk.messagebox.showinfo(  "الحجز موجود بالفعل",
+                    messagebox.showinfo(  "الحجز موجود بالفعل",
                                     "Reservation already exists!",
                                     parent=self.add_window)
                     return True

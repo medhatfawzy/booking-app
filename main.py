@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Mimum python version required is 3.6
+# Minimum python version required is 3.6
 from tkinter import Tk, Label, Button, CENTER
 # importing the classes from the other files
 from addReservation import add
@@ -7,11 +7,14 @@ from searchReservation import search
 from blacklist import block
 # library for the images
 from PIL import Image, ImageTk
-# library for the rendering of Arabic in the widgets
+# library for rendering Arabic in the widgets
 from awesometkinter.bidirender import add_bidi_support, render_text
 
+# Creating the main window
 root = Tk()
 root.title("الحجوزات")
+img = PhotoImage(file="alfayrouz.ico")
+root.iconphoto(True, img)
 
 # Centering the window
 width = int(root.winfo_screenwidth() / 2)
