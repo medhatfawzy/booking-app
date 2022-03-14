@@ -1,5 +1,5 @@
 # Booking App for Alfayrouz Beach
-<img src="alfayrouz.png" style="
+<img src="logo.png" style="
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -11,3 +11,4 @@
 - Pillow
 - AwesomeTkinter (awesometkinter)
 - CSV (csv)
+- sqlite3

@@ -12,6 +12,7 @@ class search():
         self.root = root
         self.search_window = Toplevel(self.root)
         self.search_window.title("البحث عن نزيل")
+        self.search_window.transient(root)
 
         # Centering the widget
         width = int(self.search_window.winfo_screenwidth() / 3)
@@ -35,7 +36,7 @@ class search():
         add_bidi_support(self.phone_number_label)
         self.phone_number_label.set(":الرقم")
         # creating the search button
-        self.btn_search = Button(self.search_window, text="Search", command=self.searchGuest)
+        self.btn_search = Button(self.search_window, text="Search", command=self.searchGuest, padx=23, pady=23)
 
         # the distance from the left for the label and the entry
         relx_label = 0.8

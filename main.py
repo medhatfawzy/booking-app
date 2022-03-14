@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Minimum python version required is 3.6
-from tkinter import Tk, Label, Button, CENTER
+from tkinter import Tk, Label, Button, CENTER, PhotoImage, ttk
 # importing the classes from the other files
 from addReservation import add
 from searchReservation import search
@@ -13,8 +13,11 @@ from awesometkinter.bidirender import add_bidi_support, render_text
 # Creating the main window
 root = Tk()
 root.title("الحجوزات")
-img = PhotoImage(file="alfayrouz.ico")
-root.iconphoto(True, img)
+
+# root.iconbitmap(r"logo.xbm")
+
+# style = ttk.Style()
+# style.theme_use('breeze')
 
 # Centering the window
 width = int(root.winfo_screenwidth() / 2)
@@ -31,8 +34,11 @@ def search_local():
 def block_local():
     block(root)
 
+app_name_label = Label(root, text="Reservation App")
+name_label = Label(root, text="AlFayrouz Beach Resort")
+
 # The resort image
-logo_img    = ImageTk.PhotoImage(Image.open("alfayrouz.png"))
+logo_img    = ImageTk.PhotoImage(Image.open("logo.png"))
 logo_label  = Label(image=logo_img)
 
 # Padding Variables
@@ -44,9 +50,11 @@ btn_search      = Button(root, text="Check Guest", command=search_local, padx=pa
 btn_blacklist   = Button(root, text="Blacklist", command=block_local, padx=padx, pady=pady)
 
 # Putting things on screen
-logo_label.place(relx=.5, rely=.4, anchor= CENTER)
-btn_add.place(relx=.2, rely=.7, anchor= CENTER)
-btn_search.place(relx=.5, rely=.7, anchor= CENTER)
-btn_blacklist.place(relx=.8, rely=.7, anchor= CENTER)
+app_name_label.place(relx=0.5, rely=0.1, anchor=CENTER)
+logo_label.place(relx=0.5, rely=0.3, anchor=CENTER)
+name_label.place(relx=0.5, rely=0.5, anchor=CENTER)
+btn_add.place(relx=0.2, rely=0.7, anchor= CENTER)
+btn_search.place(relx=0.5, rely=0.7, anchor= CENTER)
+btn_blacklist.place(relx=0.8, rely=0.7, anchor= CENTER)
 
 root.mainloop()

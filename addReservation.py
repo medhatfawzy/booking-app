@@ -12,6 +12,7 @@ class add():
         self.root = root
         self.add_window = Toplevel(self.root)
         self.add_window.title("إضافة نزيل")
+        self.add_window.transient(root)
 
         # Centering the widget
         width = int(self.add_window.winfo_screenwidth() / 2.5)
@@ -47,8 +48,7 @@ class add():
         add_bidi_support(self.departure_date_label)
         self.departure_date_label.set(":تاريخ المغادرة")
         # creating the save button
-        self.btn_save = Button(self.add_window, text="Save", command=self.saveGuest)
-
+        self.btn_save = Button(self.add_window, text="Save", command=self.saveGuest, padx=23, pady=23)
         # the distance from the left for the label and the entry
         relx_label = 0.7
         relx_entry = 0.4
@@ -79,9 +79,9 @@ class add():
             'departure_date': self.departure_date_entry.get()
         }
         if self.emptyFields(reservation_data): return
+        if self.invalidInputs(reservation_data): return
         if self.nameBlacklisted(reservation_data): return
         if self.duplicateReservation(reservation_data): return
-
         with open(reservation_file, 'a') as csvfile:
             csv_writer = csv.DictWriter(csvfile, fieldnames=reservation_data.keys())
             csv_writer.writerows([reservation_data])
@@ -127,3 +127,6 @@ class add():
                                     "Reservation already exists!",
                                     parent=self.add_window)
                     return True
+
+    def invalidInputs(self, reservation_data):
+        pass

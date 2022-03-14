@@ -11,7 +11,7 @@ class block():
         self.root = root
         self.blacklist_window = Toplevel(self.root)
         self.blacklist_window.title("إضافة إسم لقائمة الممنوعين من الدخول")
-
+        self.blacklist_window.transient(root)
         width = int(self.blacklist_window.winfo_screenwidth() / 3)
         height = int(self.blacklist_window.winfo_screenheight() / 3)
         x_left = int(self.blacklist_window.winfo_screenwidth() / 2 - width / 2)
@@ -33,7 +33,7 @@ class block():
         add_bidi_support(self.phone_number_label)
         self.phone_number_label.set(":الرقم")
 
-        self.btn_block = Button(self.blacklist_window, text="Block", command=self.blockGuest)
+        self.btn_block = Button(self.blacklist_window, text="Block", command=self.blockGuest, padx=80, pady=20)
 
         relx_label = 0.8
         relx_entry = 0.4
