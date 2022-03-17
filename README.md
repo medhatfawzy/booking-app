@@ -7,8 +7,10 @@
 ">
 
 ## Requirements:
-- Tkinter (tk)
-- Pillow
-- AwesomeTkinter (awesometkinter)
-- CSV (csv)
-- sqlite3
+- tk
+- awesometkinter
+- auto-py-to-exe
+- tkcalendar
+- sqlite3 or csv
+- datetime
+- os

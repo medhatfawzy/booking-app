@@ -1,13 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Minimum python version required is 3.6
-from tkinter import Toplevel, Entry, Label, Button, CENTER, messagebox
-from awesometkinter.bidirender import add_bidi_support
+from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
+from tkinter.ttk import Button, Label
+from awesometkinter.bidirender import add_bidi_support, render_text
+from os import path
+
+from databaseAPI import DataBase as db
 import csv
 
-reservation_file = "data/reservations.csv"
-blacklist_file = "data/blacklist.csv"
+reservation_file = path.join("data", "reservations.csv")
+blacklist_file = path.join("data", "blacklist.csv")
 
-class search():
+class search:
     def __init__(self, root):
         self.root = root
         self.search_window = Toplevel(self.root)
@@ -15,8 +19,8 @@ class search():
         self.search_window.transient(root)
 
         # Centering the widget
-        width = int(self.search_window.winfo_screenwidth() / 3)
-        height = int(self.search_window.winfo_screenheight() / 3)
+        width = int(self.search_window.winfo_screenwidth() / 2)
+        height = int(self.search_window.winfo_screenheight() / 2)
         x_left = int(self.search_window.winfo_screenwidth() / 2 - width / 2)
         y_top = int(self.search_window.winfo_screenheight() / 2 - height / 2)
         self.search_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
@@ -25,31 +29,29 @@ class search():
         entry_width = 40
         # creating the name entry and label
         self.name_entry = Entry(self.search_window, width=entry_width)
-        self.name_label = Label(self.search_window)
+        self.name_label = Label(self.search_window, text=render_text("الأسم:"))
         add_bidi_support(self.name_entry)
-        add_bidi_support(self.name_label)
-        self.name_label.set(":الإسم")
         # creating the phone number entry and label
         self.phone_number_entry = Entry(self.search_window, width=entry_width)
-        self.phone_number_label = Label(self.search_window)
+        self.phone_number_label = Label(self.search_window, text=render_text("رقم الهاتف:"))
         add_bidi_support(self.phone_number_entry)
-        add_bidi_support(self.phone_number_label)
-        self.phone_number_label.set(":الرقم")
         # creating the search button
-        self.btn_search = Button(self.search_window, text="Search", command=self.searchGuest, padx=23, pady=23)
+        self.search_icon = PhotoImage(file=path.join("imgs","search16.png"))
+        self.search_btn = Button(self.search_window, text=render_text("بحث"),
+                                image=self.search_icon, compound=RIGHT, command=self.searchGuest)
 
         # the distance from the left for the label and the entry
         relx_label = 0.8
         relx_entry = 0.4
 
         # putting things on the screen
-        self.name_label.place(relx=relx_label, rely=0.2, anchor= CENTER)
-        self.name_entry.place(relx=relx_entry, rely=0.2, anchor= CENTER)
+        self.name_label.place(relx=relx_label, rely=0.2, anchor=CENTER)
+        self.name_entry.place(relx=relx_entry, rely=0.2, anchor=CENTER)
 
-        self.phone_number_label.place(relx=relx_label, rely=0.4, anchor= CENTER)
-        self.phone_number_entry.place(relx=relx_entry, rely=0.4, anchor= CENTER)
+        self.phone_number_label.place(relx=relx_label, rely=0.4, anchor=CENTER)
+        self.phone_number_entry.place(relx=relx_entry, rely=0.4, anchor=CENTER)
 
-        self.btn_search.place(relx=0.5, rely=0.8, anchor= CENTER)
+        self.search_btn.place(relx=0.5, rely=0.8, anchor=CENTER)
 
     def searchGuest(self):
         '''
@@ -69,7 +71,7 @@ class search():
             for line in filereader:
                 if line[0:2] == list(guest_data.values()):
                     guest_reservations.append(line)
-        print(guest_reservations)
+        self.searchResults(guest_reservations)
         # These two line are used to close the Toplevel()
         self.search_window.destroy()
         self.search_window.update()
@@ -79,8 +81,8 @@ class search():
         This is a helper function to check if there is an empty input field
         '''
         if '' in list(guest_data.values()):
-            messagebox.showinfo( "أكمل البيانات",
-                                    "Please fill in all the fields.",
+            messagebox.showinfo( "البيانات ناقصة",
+                                    render_text("برجاء إكمال كافة البيانات"),
                                     parent=self.search_window)
             return True
 
@@ -97,3 +99,17 @@ class search():
                         "The name you are searching for is blacklisted!",
                         parent=self.search_window)
                     return True
+
+    def searchResults(self, guest_reservations):
+        if len(guest_reservations) == 0: return
+
+        for reservation in guest_reservations:
+            print(reservation)
+            messagebox.showinfo("حجوزات النزيل",
+                                render_text(f"""
+                                الأسم : {reservation[0]}
+                                رقم الهاتف : {reservation[1]}
+                                تاريخ الوصول : {reservation[2]}
+                                تاريخ المغادرة : {reservation[3]}
+                                """),
+                                parent=self.search_window)

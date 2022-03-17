@@ -1,19 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Minimum python version required is 3.6
-from tkinter import Toplevel, Entry, Label, Button, CENTER, messagebox
-from awesometkinter.bidirender import add_bidi_support
+from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
+from tkinter.ttk import Button, Label
+from awesometkinter.bidirender import add_bidi_support, render_text
+from os import path
+
+from databaseAPI import DataBase as db
 import csv
 
-blacklist_file = "data/blacklist.csv"
+blacklist_file = path.join("data", "blacklist.csv")
 
-class block():
+class block:
     def __init__(self, root):
         self.root = root
         self.blacklist_window = Toplevel(self.root)
         self.blacklist_window.title("إضافة إسم لقائمة الممنوعين من الدخول")
         self.blacklist_window.transient(root)
-        width = int(self.blacklist_window.winfo_screenwidth() / 3)
-        height = int(self.blacklist_window.winfo_screenheight() / 3)
+        width = int(self.blacklist_window.winfo_screenwidth() / 2)
+        height = int(self.blacklist_window.winfo_screenheight() / 2)
         x_left = int(self.blacklist_window.winfo_screenwidth() / 2 - width / 2)
         y_top = int(self.blacklist_window.winfo_screenheight() / 2 - height / 2)
 
@@ -22,34 +26,41 @@ class block():
         entry_width = 40
 
         self.name_entry = Entry(self.blacklist_window, width=entry_width)
-        self.name_label = Label(self.blacklist_window)
+        self.name_label = Label(self.blacklist_window, text=render_text("الأسم:"))
         add_bidi_support(self.name_entry)
-        add_bidi_support(self.name_label)
-        self.name_label.set(":الإسم")
 
         self.phone_number_entry = Entry(self.blacklist_window, width=entry_width)
-        self.phone_number_label = Label(self.blacklist_window)
+        self.phone_number_label = Label(self.blacklist_window, text=render_text("رقم الهاتف:"))
         add_bidi_support(self.phone_number_entry)
-        add_bidi_support(self.phone_number_label)
-        self.phone_number_label.set(":الرقم")
 
-        self.btn_block = Button(self.blacklist_window, text="Block", command=self.blockGuest, padx=80, pady=20)
+        self.blocking_reason_entry = Entry(self.blacklist_window, width=entry_width)
+        self.blocking_reason_label = Label(self.blacklist_window, text=render_text("سبب الحظر:"))
+        add_bidi_support(self.blocking_reason_entry)
+        # Creating the block button
+        self.block_icon = PhotoImage(file=path.join("imgs","block16.png"))
+        self.block_btn = Button(self.blacklist_window, text=render_text("حظر"),
+                                image=self.block_icon, compound=RIGHT, command=self.blockGuest)
 
+        # Putting things on the screen
         relx_label = 0.8
         relx_entry = 0.4
 
-        self.name_label.place(relx=relx_label, rely=0.2, anchor= CENTER)
-        self.name_entry.place(relx=relx_entry, rely=0.2, anchor= CENTER)
+        self.name_label.place(relx=relx_label, rely=0.2, anchor=CENTER)
+        self.name_entry.place(relx=relx_entry, rely=0.2, anchor=CENTER)
 
-        self.phone_number_label.place(relx=relx_label, rely=0.4, anchor= CENTER)
-        self.phone_number_entry.place(relx=relx_entry, rely=0.4, anchor= CENTER)
+        self.phone_number_label.place(relx=relx_label, rely=0.4, anchor=CENTER)
+        self.phone_number_entry.place(relx=relx_entry, rely=0.4, anchor=CENTER)
 
-        self.btn_block.place(relx=0.5, rely=0.8, anchor= CENTER)
+        self.blocking_reason_label.place(relx=relx_label, rely=0.6, anchor=CENTER)
+        self.blocking_reason_entry.place(relx=relx_entry, rely=0.6, anchor=CENTER)
+
+        self.block_btn.place(relx=0.5, rely=0.8, anchor=CENTER)
 
     def blockGuest(self):
         guest_data = {
             'name': self.name_entry.get(),
-            'phone_number': self.phone_number_entry.get()
+            'phone_number': self.phone_number_entry.get(),
+            'blocking_reason': self.blocking_reason_entry.get()
         }
 
         if self.emptyFields(guest_data): return
@@ -89,7 +100,7 @@ class block():
         This is a helper function to check if there is an empty input field
         '''
         if '' in list(guest_data.values()):
-            messagebox.showinfo( "أكمل البيانات",
-                                "Please fill in all the fields.",
-                                parent=self.blacklist_window)
+            messagebox.showinfo( "البيانات ناقصة",
+                                    render_text("برجاء إكمال كافة البيانات"),
+                                    parent=self.blacklist_window)
             return True

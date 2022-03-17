@@ -1,5 +1,0 @@
-tk
-pillow
-# csv
-awesometkinter
-auto-py-to-exe
