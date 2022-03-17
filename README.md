@@ -1,5 +1,5 @@
 # Booking App for Alfayrouz Beach
-<img src="logo.png" style="
+<img src="imgs/logo.png" style="
     display: block;
     margin-left: auto;
     margin-right: auto;
