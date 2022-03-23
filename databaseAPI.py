@@ -38,7 +38,11 @@ class DataBase:
 
     def block_guest(guest_data):
         name, phone_number, blocking_reason = guest_data
-        self.cursor.execute(f"")
+        self.cursor.execute(f"""
+                        INSERT INTO blacklist VALUES('{name}',
+                                                        '{phone_number}',
+                                                        '{blocking_reason}')
+        """)
         # commit changes
         self.database.commit()
         # close the connection

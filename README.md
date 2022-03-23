@@ -1,10 +1,5 @@
 # Booking App for Alfayrouz Beach
-<img src="imgs/logo.png" style="
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 20%;
-">
+<img src="imgs/logo.png" style="width: 20%;">
 
 ## Requirements:
 - tk
@@ -14,3 +9,4 @@
 - sqlite3 or csv
 - datetime
 - os
+- re

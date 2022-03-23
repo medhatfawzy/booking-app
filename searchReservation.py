@@ -4,6 +4,7 @@ from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
 from os import path
+from re import compile
 
 from databaseAPI import DataBase as db
 import csv
@@ -17,7 +18,6 @@ class search:
         self.search_window = Toplevel(self.root)
         self.search_window.title("البحث عن نزيل")
         self.search_window.transient(root)
-
         # Centering the widget
         width = int(self.search_window.winfo_screenwidth() / 2)
         height = int(self.search_window.winfo_screenheight() / 2)
@@ -43,7 +43,6 @@ class search:
         # the distance from the left for the label and the entry
         relx_label = 0.8
         relx_entry = 0.4
-
         # putting things on the screen
         self.name_label.place(relx=relx_label, rely=0.2, anchor=CENTER)
         self.name_entry.place(relx=relx_entry, rely=0.2, anchor=CENTER)
@@ -61,7 +60,7 @@ class search:
             'name': self.name_entry.get(),
             'phone_number': self.phone_number_entry.get()
         }
-        if self.emptyFileds(guest_data): return
+        if self.invalidInputs(guest_data): return
         if self.nameBlacklisted(guest_data): return
 
         guest_reservations = []
@@ -76,13 +75,22 @@ class search:
         self.search_window.destroy()
         self.search_window.update()
 
-    def emptyFileds(self, guest_data):
+    def invalidInputs(self, guest_data):
         '''
-        This is a helper function to check if there is an empty input field
+        This is a helper function to check if there is an empty input field or invalid inputs
         '''
+        # checking for empty fields
         if '' in list(guest_data.values()):
-            messagebox.showinfo( "البيانات ناقصة",
-                                    render_text("برجاء إكمال كافة البيانات"),
+            messagebox.showwarning("البيانات ناقصة",
+                                render_text("برجاء إكمال كافة البيانات"),
+                                parent=self.search_window)
+            return True
+        # checking the validity of the phone number field, the number must be an egyptian phone number
+        phone_number = guest_data["phone_number"]
+        number_re = compile(r"^01[0-2,5]\d{8}")
+        if number_re.match(phone_number) is None:
+            messagebox.showwarning("خطأ في رقم الهاتف",
+                                    render_text("الرجاء إدخال رقم هاتف صحيح!"),
                                     parent=self.search_window)
             return True
 
@@ -96,8 +104,8 @@ class search:
             for line in filereader:
                 if line == list(guest_data.values()):
                     messagebox.showwarning( "الأسم في قائمة الحظر",
-                        "The name you are searching for is blacklisted!",
-                        parent=self.search_window)
+                                            "The name you are searching for is blacklisted!",
+                                            parent=self.search_window)
                     return True
 
     def searchResults(self, guest_reservations):

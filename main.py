@@ -47,8 +47,8 @@ padx = 80
 pady = 20
 # Creating the Buttons
 add_img = PhotoImage(file=path.join("imgs","add.png"))
-search_img = PhotoImage(file=path.join("imgs","block.png"))
-block_img = PhotoImage(file=path.join("imgs","block16.png"))
+search_img = PhotoImage(file=path.join("imgs","search.png"))
+block_img = PhotoImage(file=path.join("imgs","block.png"))
 btn_add         = Button(root, text=render_text("إضافة حجز"), image=add_img, compound=RIGHT, command=add_local)
 btn_search      = Button(root, text=render_text("بحث عن نزيل"), image=search_img,compound=RIGHT, command=search_local)
 btn_blacklist   = Button(root, text=render_text("قائمة الحظر"), image=block_img,compound=RIGHT, command=block_local)

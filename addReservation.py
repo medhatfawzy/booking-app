@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 # Minimum python version required is 3.6
-from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
+from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage, Tk
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
 from tkcalendar import DateEntry
-import datetime as dt
+from datetime import date
 from os import path
+from re import compile
+
 from databaseAPI import DataBase
 import csv
 
@@ -16,9 +18,8 @@ class add:
     def __init__(self, root):
         self.root = root
         self.add_window = Toplevel(self.root)
-        self.add_window.title("إضافة نزيل")
+        self.add_window.title("إضافة حجز")
         self.add_window.transient(root)
-
         # Centering the widget
         width = int(self.add_window.winfo_screenwidth() / 2)
         height = int(self.add_window.winfo_screenheight() / 2)
@@ -27,7 +28,7 @@ class add:
         self.add_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
 
         # creating the entry width for all the entries
-        entry_width = 40
+        entry_width:int = 40
         # creating the name entry and label
         self.name_entry = Entry(self.add_window, width=entry_width)
         self.name_label = Label(self.add_window, text=render_text("الأسم:"))
@@ -53,8 +54,8 @@ class add:
                                 image=self.save_icon, compound=RIGHT, command=self.saveGuest)
 
         # the distance from the left for the label and the entry
-        relx_label = 0.7
-        relx_entry = 0.4
+        relx_label:float = 0.7
+        relx_entry:float = 0.4
         # putting things on the screen
         self.name_label.place(relx=relx_label, rely=0.1, anchor=CENTER)
         self.name_entry.place(relx=relx_entry, rely=0.1, anchor=CENTER)
@@ -80,7 +81,6 @@ class add:
             'arrival_date': self.arrival_date_entry.get_date(),
             'departure_date': self.departure_date_entry.get_date()
         }
-        if self.emptyFields(reservation_data): return
         if self.invalidInputs(reservation_data): return
         if self.nameBlacklisted(reservation_data): return
         if self.duplicateReservation(reservation_data): return
@@ -91,15 +91,6 @@ class add:
         self.add_window.destroy()
         self.add_window.update()
 
-    def emptyFields(self, reservation_data):
-        '''
-        This is a helper function to check if there is an empty input field
-        '''
-        if '' in list(reservation_data.values()):
-            messagebox.showinfo( "البيانات ناقصة",
-                                    render_text("برجاء إكمال كافة البيانات"),
-                                    parent=self.add_window)
-            return True
 
     def nameBlacklisted(self, reservation_data):
         '''
@@ -112,9 +103,8 @@ class add:
             for line in blacklist_reader:
                 if line == guest_data:
                     messagebox.showwarning("الإسم محظور",
-                                    render_text("الأسم الذي تحاول إضافته في قائمة الحظر!"),
-
-                                    parent=self.add_window)
+                                            render_text("الأسم الذي تحاول إضافته في قائمة الحظر!"),
+                                            parent=self.add_window)
                     return True
 
     def duplicateReservation(self, reservation_data):
@@ -126,14 +116,24 @@ class add:
             for line in csv_reader:
                 if line == list(reservation_data.values()):
                     messagebox.showinfo("الحجز مكرر",
-                                    render_text("هذا الحجز موجود بالفعل!"),
-                                    parent=self.add_window)
+                                        render_text("هذا الحجز موجود بالفعل!"),
+                                        parent=self.add_window)
                     return True
 
     def invalidInputs(self, reservation_data):
-        arrival_date = reservation_data["arrival_date"]
-        departure_date = reservation_data["departure_date"]
-
+        '''
+        This helper function checks that the user has entered correct values
+        '''
+        arrival_date:date = reservation_data["arrival_date"]
+        departure_date:date = reservation_data["departure_date"]
+        phone_number:str = reservation_data["phone_number"]
+        # checking for empty fields
+        if '' in list(reservation_data.values()):
+            messagebox.showwarning("البيانات ناقصة",
+                                    render_text("برجاء إكمال كافة البيانات"),
+                                    parent=self.add_window)
+            return True
+        # checking the validity of the dates
         if arrival_date == departure_date:
             messagebox.showwarning("خطأ في مواعيد الحجز",
                                     render_text("يوم الوصول هو نفس يوم المغادرة!"),
@@ -144,8 +144,20 @@ class add:
                                     render_text("يوم الوصول يسبق يوم المغادرة!"),
                                     parent=self.add_window)
             return True
-        if arrival_date < dt.date.today():
+        if arrival_date < date.today():
             messagebox.showwarning("خطأ في مواعيد الحجز",
-            render_text("يوم الوصول هو يوم في الماضي!"),
+                                    render_text("يوم الوصول هو يوم في الماضي!"),
+                                    parent=self.add_window)
+            return True
+        # checking the validity of the phone number
+        number_re = compile(r"^01[0-2,5]\d{8}")
+        print(number_re.match(phone_number))
+        if number_re.match(phone_number) is None:
+            messagebox.showwarning("خطأ في رقم الهاتف",
+            render_text("الرجاء إدخال رقم هاتف صحيح!"),
             parent=self.add_window)
             return True
+
+root = Tk()
+add(root)
+root.mainloop()
