@@ -26,7 +26,7 @@ class search:
         self.search_window.geometry(f"{width}x{height}+{x_left}+{y_top}")
 
         # creating the entry width for all the entries
-        entry_width = 40
+        entry_width:int = 40
         # creating the name entry and label
         self.name_entry = Entry(self.search_window, width=entry_width)
         self.name_label = Label(self.search_window, text=render_text("الأسم:"))
@@ -41,8 +41,8 @@ class search:
                                 image=self.search_icon, compound=RIGHT, command=self.searchGuest)
 
         # the distance from the left for the label and the entry
-        relx_label = 0.8
-        relx_entry = 0.4
+        relx_label:float = 0.8
+        relx_entry:float = 0.4
         # putting things on the screen
         self.name_label.place(relx=relx_label, rely=0.2, anchor=CENTER)
         self.name_entry.place(relx=relx_entry, rely=0.2, anchor=CENTER)
@@ -75,7 +75,7 @@ class search:
         self.search_window.destroy()
         self.search_window.update()
 
-    def invalidInputs(self, guest_data):
+    def invalidInputs(self, guest_data:dict):
         '''
         This is a helper function to check if there is an empty input field or invalid inputs
         '''
@@ -94,7 +94,7 @@ class search:
                                     parent=self.search_window)
             return True
 
-    def nameBlacklisted(self, guest_data):
+    def nameBlacklisted(self, guest_data:dict):
         '''
         This helper function checks if the name we are searching for
         exists in the blacklist or not.
@@ -108,7 +108,7 @@ class search:
                                             parent=self.search_window)
                     return True
 
-    def searchResults(self, guest_reservations):
+    def searchResults(self, guest_reservations:list):
         if len(guest_reservations) == 0: return
 
         for reservation in guest_reservations:

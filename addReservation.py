@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # Minimum python version required is 3.6
-from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage, Tk
+from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
 from tkcalendar import DateEntry
@@ -157,7 +157,3 @@ class add:
             render_text("الرجاء إدخال رقم هاتف صحيح!"),
             parent=self.add_window)
             return True
-
-root = Tk()
-add(root)
-root.mainloop()
