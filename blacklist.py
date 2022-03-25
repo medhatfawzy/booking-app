@@ -5,7 +5,7 @@ from awesometkinter.bidirender import add_bidi_support, render_text
 from os import path
 from re import compile
 
-from databaseAPI import DataBase as db
+from databaseAPI import DataBase
 import csv
 
 blacklist_file = path.join("data", "blacklist.csv")
@@ -15,6 +15,7 @@ class Block(Toplevel):
         super().__init__(root)
         self.title("إضافة إسم لقائمة الممنوعين من الدخول")
         self.transient(root)
+        self.db = DataBase()
         # centering the widget
         width = int(self.winfo_screenwidth() / 2)
         height = int(self.winfo_screenheight() / 2)
@@ -58,15 +59,13 @@ class Block(Toplevel):
             'blocking_reason': self.blocking_reason_entry.get()
         }
         if self.invalidInputs(guest_data): return
-        if self.duplicateName(guest_data): return
         if not self.confirmationMssg(): return
-        with open(blacklist_file, 'a') as blacklist:
-            wrtiter = csv.DictWriter(blacklist, fieldnames=guest_data.keys())
-            wrtiter.writerows([guest_data])
-            print("data written")
+        self.db.blockGuest(self, list(guest_data.values()))
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
+        # close the connection
+        self.db.database.close()
 
     def confirmationMssg(self) -> bool:
         return messagebox.askyesno("هل تريد إضافة الإسم فعلاً",
@@ -75,31 +74,10 @@ class Block(Toplevel):
                                     إلى قائمة الحظر؟"""),
                                     parent=self)
 
-    def duplicateName(self, guest_data:dict) -> bool:
-        '''
-        This helper function checks if the name we are trying to add to the blacklist
-        exists in the blacklist already or not.
-        '''
-        with open(blacklist_file, 'r') as blacklist:
-            reader = csv.reader(blacklist)
-            for line in reader:
-                if line == list(guest_data.values()):
-                    messagebox.showinfo("الإسم موجود بالفعل",
-                            f"الإسم موجود بالفعل في قائمة الحظر!",
-                            parent=self)
-                    return True
-        return False
-
     def invalidInputs(self, guest_data:dict) -> bool:
         '''
         This is a helper function to check if there is an empty input field or wrong inputs
         '''
-        # checking for empty fields
-        if '' in list(guest_data.values()):
-            messagebox.showwarning("البيانات ناقصة",
-                                    render_text("برجاء إكمال كافة البيانات"),
-                                    parent=self)
-            return True
         # checking the validity of the phone number field, the number must be an egyptian phone number
         phone_number = guest_data["phone_number"]
         number_re = compile(r"^01[0-2,5]\d{8}")

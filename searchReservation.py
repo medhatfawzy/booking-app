@@ -6,16 +6,13 @@ from os import path
 from re import compile
 
 from databaseAPI import DataBase
-import csv
-
-reservation_file = path.join("data", "reservations.csv")
-blacklist_file = path.join("data", "blacklist.csv")
 
 class Search(Toplevel):
     def __init__(self, root):
         super().__init__(root)
         self.title("البحث عن نزيل")
         self.transient(root)
+        self.db = DataBase()
         # Centering the widget
         width = int(self.winfo_screenwidth() / 2)
         height = int(self.winfo_screenheight() / 2)
@@ -56,27 +53,18 @@ class Search(Toplevel):
         }
         if self.invalidInputs(guest_data): return
         if self.nameBlacklisted(guest_data): return
-        guest_reservations = []
-        with open(reservation_file, 'r') as reservations:
-            filereader = csv.reader(reservations)
-            for line in filereader:
-                if line[0:2] == list(guest_data.values()):
-                    guest_reservations.append(line)
+        guest_reservations = self.db.searchReservation(self, list(guest_data.values()))
         self.showResults(guest_reservations)
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
+        # close the connection
+        self.db.database.close()
 
     def invalidInputs(self, guest_data:dict) -> bool:
         '''
         This is a helper function to check if there is an empty input field or wrong inputs
         '''
-        # checking for empty fields
-        if '' in list(guest_data.values()):
-            messagebox.showwarning("البيانات ناقصة",
-                                render_text("برجاء إكمال كافة البيانات"),
-                                parent=self)
-            return True
         # checking the validity of the phone number field, the number must be an egyptian phone number
         phone_number = guest_data["phone_number"]
         number_re = compile(r"^01[0-2,5]\d{8}")
@@ -85,21 +73,6 @@ class Search(Toplevel):
                                     render_text("الرجاء إدخال رقم هاتف صحيح!"),
                                     parent=self)
             return True
-        return False
-
-    def nameBlacklisted(self, guest_data:dict) -> bool:
-        '''
-        This helper function checks if the name we are searching for
-        exists in the blacklist or not.
-        '''
-        with open(blacklist_file, 'r') as blacklist:
-            filereader = csv.reader(blacklist)
-            for line in filereader:
-                if line == list(guest_data.values()):
-                    messagebox.showwarning( "الأسم في قائمة الحظر",
-                                            render_text("الإسم الذي تبحث عنه في قائمة الحظر"),
-                                            parent=self)
-                    return True
         return False
 
     def showResults(self, guest_reservations:list) -> None:

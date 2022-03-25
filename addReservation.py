@@ -18,6 +18,7 @@ class Add(Toplevel):
         super().__init__(root)
         self.title("إضافة حجز")
         self.transient(root)
+        self.db = DataBase()
         # Centering the widget
         width = int(self.winfo_screenwidth() / 2)
         height = int(self.winfo_screenheight() / 1.5)
@@ -43,7 +44,6 @@ class Add(Toplevel):
         self.departure_date_label = Label(self, text=render_text("تاريخ المغادرة:"))
         self.departure_date_entry = DateEntry(self,width=entry_width)
         add_bidi_support(self.departure_date_entry)
-
         # creating the unit name entry and label
 
         # creating the save button
@@ -57,16 +57,12 @@ class Add(Toplevel):
         # putting things on the screen
         self.name_label.place(relx=relx_label, rely=0.1, anchor="w")
         self.name_entry.place(relx=relx_entry, rely=0.1, anchor=CENTER)
-
         self.phone_number_label.place(relx=relx_label, rely=0.3, anchor="w")
         self.phone_number_entry.place(relx=relx_entry, rely=0.3, anchor=CENTER)
-
         self.arrival_date_label.place(relx=relx_label, rely=0.5, anchor="w")
         self.arrival_date_entry.place(relx=relx_entry, rely=0.5, anchor=CENTER)
-
         self.departure_date_label.place(relx=relx_label, rely=0.7, anchor="w")
         self.departure_date_entry.place(relx=relx_entry, rely=0.7, anchor=CENTER)
-
         self.save_btn.place(relx=0.5, rely=0.9, anchor=CENTER)
 
     def saveGuest(self) -> None:
@@ -80,45 +76,14 @@ class Add(Toplevel):
             'departure_date': self.departure_date_entry.get_date()
         }
         if self.invalidInputs(reservation_data): return
-        if self.nameBlacklisted(reservation_data): return
-        if self.duplicateReservation(reservation_data): return
-        db = DataBase()
-        db.add_reservation(reservation_data.values())
-        print("data written")
+        self.db.addReservation(self, list(reservation_data.values()))
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
+        # close the connection
+        self.db.database.close()
+        print("database closed!")
 
-
-    def nameBlacklisted(self, reservation_data:dict) -> bool:
-        '''
-        This helper function checks if the name we are trying to create a reservation for
-        exists in the blacklist or not.
-        '''
-        with open(blacklist_file, 'r') as blacklist:
-            blacklist_reader = csv.reader(blacklist)
-            guest_data = list(reservation_data.values())[0:2]
-            for line in blacklist_reader:
-                if line == guest_data:
-                    messagebox.showwarning("الإسم محظور",
-                                            render_text("الأسم الذي تحاول إضافته في قائمة الحظر!"),
-                                            parent=self)
-                    return True
-        return False
-
-    def duplicateReservation(self, reservation_data:dict) -> bool:
-        '''
-        This helper function checks if the reservation is already added
-        '''
-        with open(reservation_file, 'r') as csvfile:
-            csv_reader = csv.reader(csvfile)
-            for line in csv_reader:
-                if line == list(reservation_data.values()):
-                    messagebox.showinfo("الحجز مكرر",
-                                        render_text("هذا الحجز موجود بالفعل!"),
-                                        parent=self)
-                    return True
-        return False
 
     def invalidInputs(self, reservation_data:dict) -> bool:
         '''
@@ -127,12 +92,6 @@ class Add(Toplevel):
         arrival_date:date = reservation_data["arrival_date"]
         departure_date:date = reservation_data["departure_date"]
         phone_number:str = reservation_data["phone_number"]
-        # checking for empty fields
-        if '' in list(reservation_data.values()):
-            messagebox.showwarning("البيانات ناقصة",
-                                    render_text("برجاء إكمال كافة البيانات"),
-                                    parent=self)
-            return True
         # checking the validity of the dates
         if arrival_date == departure_date:
             messagebox.showwarning("خطأ في مواعيد الحجز",
@@ -151,7 +110,6 @@ class Add(Toplevel):
             return True
         # checking the validity of the phone number
         number_re = compile(r"^01[0-2,5]\d{8}")
-        print(number_re.match(phone_number))
         if number_re.match(phone_number) is None:
             messagebox.showwarning("خطأ في رقم الهاتف",
             render_text("الرجاء إدخال رقم هاتف صحيح!"),
