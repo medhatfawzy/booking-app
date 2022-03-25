@@ -10,3 +10,5 @@
 - datetime
 - os
 - re
+
+# Minimum python version required is 3.6
