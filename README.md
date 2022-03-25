@@ -11,4 +11,4 @@
 - os
 - re
 
-##### Minimum python version required is 3.6
+#### * Note that Minimum python version required is 3.6
