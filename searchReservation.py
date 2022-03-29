@@ -3,16 +3,14 @@ from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
 from os import path
-from re import compile
 
-from databaseAPI import DataBase
+from databaseAPI import DataBaseAPI
 
 class Search(Toplevel):
     def __init__(self, root):
         super().__init__(root)
         self.title("البحث عن نزيل")
         self.transient(root)
-        self.db = DataBase()
         # Centering the widget
         width = int(self.winfo_screenwidth() / 2)
         height = int(self.winfo_screenheight() / 2)
@@ -51,29 +49,12 @@ class Search(Toplevel):
             'name': self.name_entry.get(),
             'phone_number': self.phone_number_entry.get()
         }
-        if self.invalidInputs(guest_data): return
-        if self.nameBlacklisted(guest_data): return
-        guest_reservations = self.db.searchReservation(self, list(guest_data.values()))
+        guest_reservations = DataBaseAPI.searchReservation(self, guest_data)
         self.showResults(guest_reservations)
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
-        # close the connection
-        self.db.database.close()
 
-    def invalidInputs(self, guest_data:dict) -> bool:
-        '''
-        This is a helper function to check if there is an empty input field or wrong inputs
-        '''
-        # checking the validity of the phone number field, the number must be an egyptian phone number
-        phone_number = guest_data["phone_number"]
-        number_re = compile(r"^01[0-2,5]\d{8}")
-        if number_re.match(phone_number) is None:
-            messagebox.showwarning("خطأ في رقم الهاتف",
-                                    render_text("الرجاء إدخال رقم هاتف صحيح!"),
-                                    parent=self)
-            return True
-        return False
 
     def showResults(self, guest_reservations:list) -> None:
         if len(guest_reservations) == 0: return

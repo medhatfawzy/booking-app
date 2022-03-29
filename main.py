@@ -60,7 +60,6 @@ class MainWindow(Tk):
         self.btn_search.place        (relx=0.5, rely=0.8, anchor=CENTER)
         self.btn_blacklist.place     (relx=0.8, rely=0.8, anchor=CENTER)
 
-
 if __name__ == "__main__":
     App = MainWindow()
     App.mainloop()

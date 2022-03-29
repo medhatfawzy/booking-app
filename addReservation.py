@@ -7,18 +7,13 @@ from datetime import date
 from os import path
 from re import compile
 
-from databaseAPI import DataBase
-import csv
-
-reservation_file = path.join("data", "reservations.csv")
-blacklist_file = path.join("data", "blacklist.csv")
+from databaseAPI import DataBaseAPI
 
 class Add(Toplevel):
     def __init__(self, root):
         super().__init__(root)
         self.title("إضافة حجز")
         self.transient(root)
-        self.db = DataBase()
         # Centering the widget
         width = int(self.winfo_screenwidth() / 2)
         height = int(self.winfo_screenheight() / 1.5)
@@ -75,23 +70,19 @@ class Add(Toplevel):
             'arrival_date': self.arrival_date_entry.get_date(),
             'departure_date': self.departure_date_entry.get_date()
         }
-        if self.invalidInputs(reservation_data): return
-        self.db.addReservation(self, list(reservation_data.values()))
+        if self.invalidDates(reservation_data): return
+        if not DataBaseAPI.addReservation(self, reservation_data): return
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
-        # close the connection
-        self.db.database.close()
-        print("database closed!")
 
 
-    def invalidInputs(self, reservation_data:dict) -> bool:
+    def invalidDates(self, reservation_data:dict) -> bool:
         '''
-        This is a helper function to check if there is an empty input field or wrong inputs
+        This is a helper function to check if there is wrong inputs
         '''
         arrival_date:date = reservation_data["arrival_date"]
         departure_date:date = reservation_data["departure_date"]
-        phone_number:str = reservation_data["phone_number"]
         # checking the validity of the dates
         if arrival_date == departure_date:
             messagebox.showwarning("خطأ في مواعيد الحجز",
@@ -108,11 +99,5 @@ class Add(Toplevel):
                                     render_text("يوم الوصول هو يوم في الماضي!"),
                                     parent=self)
             return True
-        # checking the validity of the phone number
-        number_re = compile(r"^01[0-2,5]\d{8}")
-        if number_re.match(phone_number) is None:
-            messagebox.showwarning("خطأ في رقم الهاتف",
-            render_text("الرجاء إدخال رقم هاتف صحيح!"),
-            parent=self)
-            return True
         return False
+
