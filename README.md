@@ -6,7 +6,7 @@
 - awesometkinter
 - auto-py-to-exe
 - tkcalendar
-- sqlite3 or csv
+- sqlite3
 - datetime
 - os
 - re
