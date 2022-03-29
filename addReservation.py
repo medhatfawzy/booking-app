@@ -3,7 +3,6 @@ from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
 from tkcalendar import DateEntry
-from datetime import date
 from os import path
 from re import compile
 
@@ -70,34 +69,9 @@ class Add(Toplevel):
             'arrival_date': self.arrival_date_entry.get_date(),
             'departure_date': self.departure_date_entry.get_date()
         }
-        if self.invalidDates(reservation_data): return
         if not DataBaseAPI.addReservation(self, reservation_data): return
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
 
-
-    def invalidDates(self, reservation_data:dict) -> bool:
-        '''
-        This is a helper function to check if there is wrong inputs
-        '''
-        arrival_date:date = reservation_data["arrival_date"]
-        departure_date:date = reservation_data["departure_date"]
-        # checking the validity of the dates
-        if arrival_date == departure_date:
-            messagebox.showwarning("خطأ في مواعيد الحجز",
-                                    render_text("يوم الوصول هو نفس يوم المغادرة!"),
-                                    parent=self)
-            return True
-        if arrival_date > departure_date:
-            messagebox.showwarning("خطأ في مواعيد الحجز",
-                                    render_text("يوم الوصول يسبق يوم المغادرة!"),
-                                    parent=self)
-            return True
-        if arrival_date < date.today():
-            messagebox.showwarning("خطأ في مواعيد الحجز",
-                                    render_text("يوم الوصول هو يوم في الماضي!"),
-                                    parent=self)
-            return True
-        return False
 

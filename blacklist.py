@@ -54,16 +54,8 @@ class Block(Toplevel):
             'phone_number': self.phone_number_entry.get(),
             'blocking_reason': self.blocking_reason_entry.get()
         }
-        if not self.confirmationMssg(): return
         if not DataBaseAPI.blockGuest(self, guest_data): return
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
-
-    def confirmationMssg(self) -> bool:
-        return messagebox.askyesno("هل تريد إضافة الإسم فعلاً",
-                                    render_text(f"""هل تريد فعلاً إضافة
-                                    {self.name_entry.get()}
-                                    إلى قائمة الحظر؟"""),
-                                    parent=self)
 
