@@ -50,7 +50,7 @@ class DataBaseAPI:
         # self.cursor.execute("DROP TABLE guests")
 
     def searchReservation(self, root, guest_data:dict) -> tuple:
-        if isInvalidInputs(root, guest_data): raise ValueError()
+        if invalidInputs(root, guest_data): raise ValueError()
         is_blacklisted = isInBlacklist(root, guest_data)
         self.cursor.execute(""" SELECT  guests.name, guests.phone_number, guests.city,
                                         reservations.arrival_date, reservations.departure_date,
@@ -69,11 +69,11 @@ class DataBaseAPI:
         returns true if successful or false if not
         """
         # name, phone_number, arrival_date, departure_date = list(reservation.values())
-        if (isInvalidInputs(root, reservation)
-            or invalidDates(root, reservation)
+        if ((emptyFields(root, reservation)
+            or wrongPhoneNumber(root, reservation)
+            or invalidDates(root, reservation))
             or self.isInBlacklist(root, reservation)
             or self.isDuplicateReservation(root, reservation)): return False
-
         self.cursor.execute(""" INSERT INTO reservations
                                 (guestID, arrival_date, departure_date)
                                 VALUES((SELECT guestID FROM guests
@@ -90,8 +90,8 @@ class DataBaseAPI:
         """
         returns true if successful or false if not
         """
-        if (isInvalidInputs(root, reservation)
-            or invalidDates(root, reservation)): return False
+        if (emptyFields(root, reservation)
+            or wrongPhoneNumber(root, reservation)): return False
 
         self.cursor.execute("""DELETE FROM reservations
                                 WHERE guestID IN (
@@ -111,7 +111,8 @@ class DataBaseAPI:
         """
         name, phone_number, blocking_reason = guest_data["name"], guest_data["phone_number"], guest_data["blocking_reason"]
 
-        if (isInvalidInputs(root, guest_data)
+        if (emptyFields(root, guest_data)
+            or wrongPhoneNumber(root, guest_data)
             or self.isInBlacklist(root, guest_data)): return False
         self.cursor.execute(""" INSERT INTO blacklist
                                 (guestID, blocking_reason)
@@ -140,7 +141,10 @@ class DataBaseAPI:
                                 AND reservations.departure_date=?""",
                             (name, phone_number, arrival_date, departure_date))
         reservations = db.cursor.fetchall()
-        return True if len(reservations) != 0 else False
+        if len(reservations) != 0:
+            errorMssg("الحجز موجود", "الحجز موجود بالفعل!", parent=root)
+            return True
+        return False
 
     def isInBlacklist(self, root, guest_data:dict) -> bool:
         name, phone_number = guest_data["name"], guest_data["phone_number"]
@@ -151,6 +155,9 @@ class DataBaseAPI:
                                 WHERE guests.name=? AND guests.phone_number=?""",
                             (name, phone_number))
         names_list = db.cursor.fetchall()
-        return True if len(names_list) != 0 else False
+        if len(names_list) != 0:
+            errorMssg("الأسم محظور", "الأسم موجود في قائمة الحظر!", parent=root)
+            return True
+        return False
 
 # db = DataBaseAPI()

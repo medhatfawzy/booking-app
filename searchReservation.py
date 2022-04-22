@@ -12,7 +12,7 @@ class Search(Toplevel):
         self.root = root
         self.initUI()
     def initUI(self):
-        self.title("البحث عن نزيل")
+        self.title("البحث عن حجز")
         self.transient(self.root)
         # Centering the widget
         width = int(self.winfo_screenwidth() / 2)

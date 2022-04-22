@@ -10,7 +10,7 @@ from databaseAPI import DataBaseAPI
 class Block(Toplevel):
     def __init__(self, root):
         super().__init__(root)
-        self.title("إضافة إسم لقائمة الممنوعين من الدخول")
+        self.title("إضافة إسم لقائمة الحظر")
         self.transient(root)
         # centering the widget
         width = int(self.winfo_screenwidth() / 2)

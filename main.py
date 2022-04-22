@@ -14,7 +14,7 @@ class MainWindow(Tk):
     # Creating the main window
     def __init__(self):
         super().__init__()
-        self.title("الحجوزات")
+        self.title("قرية الفيروز بيتش")
         # styling
         s = Style()
         s.theme_use('clam')
