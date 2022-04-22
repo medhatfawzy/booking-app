@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage
+from tkinter import Toplevel, CENTER, RIGHT, Entry, PhotoImage
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
 from os import path
@@ -37,7 +37,7 @@ class Block(Toplevel):
         self.block_btn = Button(self, text=render_text("حظر"),
                                 image=self.block_icon, compound=RIGHT, command=self.blockGuest)
         # the distance from the left for the label and the entry
-        relx_label:float = 0.7
+        relx_label:float = 0.6
         relx_entry:float = 0.4
         # putting things on the screen
         self.name_label.place(relx=relx_label, rely=0.2, anchor="w")
@@ -58,4 +58,3 @@ class Block(Toplevel):
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()
-

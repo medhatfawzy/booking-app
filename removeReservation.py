@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 from tkinter import Toplevel, CENTER, RIGHT, Entry, PhotoImage
 from tkinter.ttk import Button, Label
 from awesometkinter.bidirender import add_bidi_support, render_text
@@ -9,10 +8,10 @@ from re import compile
 
 from databaseAPI import DataBaseAPI
 
-class Add(Toplevel):
+class Remove(Toplevel):
     def __init__(self, root):
         super().__init__(root)
-        self.title("إضافة حجز")
+        self.title("حذف حجز")
         self.transient(root)
         # Centering the widget
         width = int(self.winfo_screenwidth() / 2)
@@ -55,10 +54,10 @@ class Add(Toplevel):
         add_bidi_support(self.departure_date_entry)
         # creating the unit name entry and label
 
-        # creating the save button
-        self.save_icon = PhotoImage(file=path.join("imgs","add16.png"))
-        self.save_btn = Button(self, text=render_text("حفظ"),
-                                image=self.save_icon, compound=RIGHT, command=self.saveGuest)
+        # creating the remove button
+        self.remove_icon = PhotoImage(file=path.join("imgs","remove16.png"))
+        self.remove_btn = Button(self, text=render_text("حذف"),
+                                image=self.remove_icon, compound=RIGHT, command=self.removeReservation)
 
         # the distance from the left for the label and the entry
         relx_label:float = 0.6
@@ -72,11 +71,11 @@ class Add(Toplevel):
         self.arrival_date_entry.place(relx=relx_entry, rely=0.5, anchor=CENTER)
         self.departure_date_label.place(relx=relx_label, rely=0.7, anchor="w")
         self.departure_date_entry.place(relx=relx_entry, rely=0.7, anchor=CENTER)
-        self.save_btn.place(relx=0.5, rely=0.9, anchor=CENTER)
+        self.remove_btn.place(relx=0.5, rely=0.9, anchor=CENTER)
 
-    def saveGuest(self) -> None:
+    def removeReservation(self) -> None:
         '''
-        This is the function that is activated when the user click the save button
+        This is the function that is activated when the user click the remove button
         '''
         reservation_data = {
             'name': self.name_entry.get(),
@@ -84,7 +83,7 @@ class Add(Toplevel):
             'arrival_date': self.arrival_date_entry.get_date(),
             'departure_date': self.departure_date_entry.get_date()
         }
-        if not DataBaseAPI.addReservation(self, reservation_data): return
+        if not DataBaseAPI.removeReservation(self, reservation_data): return
         # These two line are used to close the Toplevel()
         self.destroy()
         self.update()

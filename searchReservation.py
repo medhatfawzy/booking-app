@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from tkinter import Toplevel, CENTER, RIGHT, messagebox, Entry, PhotoImage, END
+from tkinter import Toplevel, CENTER, RIGHT, Entry, PhotoImage, END#, Tk
 from tkinter.ttk import Button, Label, Treeview
 from awesometkinter.bidirender import add_bidi_support, render_text
 from os import path
@@ -35,7 +35,7 @@ class Search(Toplevel):
         self.search_btn = Button(self, text=render_text("بحث"),
                                 image=self.search_icon, compound=RIGHT, command=self.searchGuest)
         # the distance from the left for the label and the entry
-        relx_label:float = 0.7
+        relx_label:float = 0.6
         relx_entry:float = 0.4
         # putting things on the screen
         self.name_label.place(relx=relx_label, rely=0.2, anchor="w")
@@ -53,16 +53,17 @@ class Search(Toplevel):
             'phone_number': self.phone_number_entry.get()
         }
         guest_reservations, is_blacklisted = DataBaseAPI.searchReservation(self, guest_data)
-        ResultsTree(self.root, guest_reservations)
-        # These two line are used to close the Toplevel()
-        self.destroy()
-        self.update()
+        ResultsTree(self, guest_reservations, is_blacklisted)
+        # # These two line are used to close the Toplevel()
+        # self.destroy()
+        # self.update()
 
 class ResultsTree(Toplevel):
-    def __init__(self, root, guest_reservations):
+    def __init__(self, root, guest_reservations, is_blacklisted):
         super().__init__()
         self.root = root
         self.guest_reservations = guest_reservations
+        self.is_blacklisted = is_blacklisted
         self.initUI()
     def initUI(self):
         self.title("حجوزات النزيل")
@@ -75,8 +76,8 @@ class ResultsTree(Toplevel):
         self.geometry(f"{width}x{height}+{x_left}+{y_top}")
 
         columns = ["name", "phone_number", "arrival_date", "departure_date", "rental_unit"]
-        results_tree = Treeview(self, columns=columns, show='headings')
-        results_tree.heading('name', text=render_text("الأسم"), anchor=CENTER)
+        results_tree = Treeview(self, columns=columns, show='headings', padding=5)
+        results_tree.heading('name', text=render_text("الأسم"))
         results_tree.heading('phone_number', text=render_text("رقم الهاتف"))
         results_tree.heading('arrival_date', text=render_text("تاريخ الوصول"))
         results_tree.heading('departure_date', text=render_text("تاريخ المغادرة"))
@@ -89,8 +90,12 @@ class ResultsTree(Toplevel):
                                                 ))
         close_btn = Button(self, text=render_text("إغلاق"), command=self.closeWindow)
 
-        results_tree.place(relx=0.1, rely=0.1)
+        results_tree.place(relx=0.5, rely=0.3, anchor=CENTER)
         close_btn.place(relx=0.5, rely=0.9, anchor=CENTER)
     def closeWindow(self):
         self.destroy()
         self.update()
+
+# root = Tk()
+# Search(root)
+# root.mainloop()
